@@ -1,34 +1,97 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Twitter } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Twitter, Pill, Warehouse, Play } from "lucide-react";
 import Image from "next/image";
+import MemeBackground from "./components/MemeBackground";
+
+// COLOR PALETTE - STRICT 5 COLORS ONLY
+// Yellow: #FFD700
+// Dark Blue: #00008B
+// Baby Blue: #89CFF0
+// White: #FFFFFF
+// Black: #000000
 
 const CONTRACT_ADDRESS = "tAjP8NfsUJDp4LcqmAPMRzhhD9BRpesGvuosSXypump";
-const X_LINK = "https://x.com/engineonsol";
+
+const LINKS = {
+  x: "https://x.com/engineonsol",
+  pump: "https://pump.fun/coin/tAjP8NfsUJDp4LcqmAPMRzhhD9BRpesGvuosSXypump",
+  depot: "https://memedepot.com/d/cnlgya-my-depot",
+};
 
 // 7 images + 1 video = 8 total assets
-// Mobile: close to center | Desktop (md:): PUSHED TO FAR EDGES
 const scatteredAssets = [
-  { type: "video", src: "/evidence/enginememe_video.mp4", position: "top-16 left-2 md:top-12 md:left-4 lg:left-8", rotation: "-rotate-6" },
-  { type: "image", src: "/evidence/enginememe2.jpg", position: "top-16 right-2 md:top-12 md:right-4 lg:right-8", rotation: "rotate-6" },
-  { type: "image", src: "/evidence/enginememe3.jpg", position: "top-1/3 left-1 md:top-1/4 md:left-2 lg:left-4", rotation: "-rotate-12" },
-  { type: "image", src: "/evidence/enginememe4.jpg", position: "top-1/3 right-1 md:top-1/4 md:right-2 lg:right-4", rotation: "rotate-10" },
-  { type: "image", src: "/evidence/enginememe5.jpg", position: "bottom-28 left-2 md:bottom-12 md:left-4 lg:left-8", rotation: "rotate-8" },
-  { type: "image", src: "/evidence/enginememe6.jpg", position: "bottom-24 right-2 md:bottom-12 md:right-4 lg:right-8", rotation: "-rotate-6" },
-  { type: "image", src: "/evidence/enginememe7.jpg", position: "bottom-40 left-1/4 hidden md:block md:bottom-1/4 md:left-2 lg:left-6", rotation: "-rotate-3" },
-  { type: "image", src: "/evidence/enginememe8.jpg", position: "bottom-36 right-1/4 hidden md:block md:bottom-1/4 md:right-2 lg:right-6", rotation: "rotate-4" },
+  // --- TOP ROW ---
+  {
+    type: "video",
+    src: "/evidence/enginememe_video.mp4",
+    position: "top-2 left-0 md:top-4 md:left-0 lg:left-2",
+    rotation: "-rotate-3",
+    size: "w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56"
+  },
+  {
+    type: "image",
+    src: "/evidence/enginememe2.jpg",
+    position: "top-36 left-0 md:top-6 md:left-[18%] lg:left-[20%]",
+    rotation: "rotate-2",
+    size: "w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56"
+  },
+  {
+    type: "video",
+    src: "/evidence/newvideo1.mp4",
+    position: "top-36 right-0 md:top-6 md:right-[18%] lg:right-[20%]",
+    rotation: "-rotate-2",
+    size: "w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56"
+  },
+  {
+    type: "image",
+    src: "/evidence/enginememe4.jpg",
+    position: "top-2 right-0 md:top-4 md:right-0 lg:right-2",
+    rotation: "rotate-4",
+    size: "w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56"
+  },
+
+  // --- BOTTOM ROW ---
+  {
+    type: "image",
+    src: "/evidence/enginememe5.png",
+    position: "bottom-2 left-0 md:bottom-4 md:left-0 lg:left-2",
+    rotation: "rotate-3",
+    size: "w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56"
+  },
+  {
+    type: "image",
+    src: "/evidence/enginememe6.jpg",
+    position: "bottom-36 left-0 md:bottom-6 md:left-[18%] lg:left-[20%]",
+    rotation: "-rotate-3",
+    size: "w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56"
+  },
+  {
+    type: "video",
+    src: "/evidence/newvideo2.mp4",
+    position: "bottom-36 right-0 md:bottom-6 md:right-[18%] lg:right-[20%]",
+    rotation: "rotate-2",
+    size: "w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56"
+  },
+  {
+    type: "image",
+    src: "/evidence/enginememe8.jpg",
+    position: "bottom-2 right-0 md:bottom-4 md:right-0 lg:right-2",
+    rotation: "-rotate-4",
+    size: "w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56"
+  },
 ];
 
-// TOP MARQUEE - "The Prophecy" (scrolls LEFT)
 const topMarqueeText = "ZERO IS PROMISED /// $ENGINE /// WHAT WOULD WHITE WHALE DO? /// I'VE SEEN THIS CANDLE BEFORE /// $ENGINE /// ";
-
-// BOTTOM MARQUEE - "The Trenches" (scrolls RIGHT)
 const bottomMarqueeText = "GRAB A PITCHFORK /// IT'S A FARMERS MARKET /// PASS ME THE .01 /// $ENGINE /// ZERO IS PROMISED /// ";
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
+  const [activeAsset, setActiveAsset] = useState<number | null>(null);
+  const [hasEntered, setHasEntered] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const copyToClipboard = async () => {
     try {
@@ -40,174 +103,208 @@ export default function Home() {
     }
   };
 
+  const handleAssetTap = (index: number) => {
+    setActiveAsset(activeAsset === index ? null : index);
+  };
+
+  const handleEnter = () => {
+    setHasEntered(true);
+    if (audioRef.current) {
+      audioRef.current.volume = 0.5;
+      audioRef.current.play().catch(e => console.log("Audio playback failed:", e));
+    }
+  };
+
   return (
-    <main className="h-screen bg-[#0a0a0a] relative overflow-hidden flex flex-col">
-      {/* Background grid */}
+    <main className="h-screen bg-transparent relative overflow-hidden">
+      {/* BACKGROUND MUSIC */}
+      <audio ref={audioRef} src="/song.mp3" loop />
+
+      {/* ENTER SCREEN OVERLAY */}
+      <AnimatePresence>
+        {!hasEntered && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            onClick={handleEnter}
+            className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center cursor-pointer"
+          >
+            <div className="text-[#FFD700] font-mono text-center space-y-4 animate-pulse px-4">
+              {/* UPDATED TITLE TEXT: Gengine Legend */}
+              <div className="text-3xl sm:text-4xl md:text-6xl font-bold font-glitch tracking-widest">
+                Gengine Legend
+              </div>
+              <p className="text-sm md:text-lg text-white font-display">
+                [ CLICK TO ENTER ]
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Wall of Evidence - 40 memes in a grid */}
+      <MemeBackground />
+
+      {/* Faint Grid Overlay - Dark Blue */}
       <div
-        className="fixed inset-0 opacity-5 pointer-events-none"
+        className="fixed inset-0 opacity-10 pointer-events-none z-[2]"
         style={{
           backgroundImage: `
-            linear-gradient(#0000FF 1px, transparent 1px),
-            linear-gradient(90deg, #0000FF 1px, transparent 1px)
+            linear-gradient(#00008B 1px, transparent 1px),
+            linear-gradient(90deg, #00008B 1px, transparent 1px)
           `,
           backgroundSize: '30px 30px'
         }}
       />
 
-      {/* TOP MARQUEE - "The Prophecy" (scrolls LEFT) */}
-      <div className="absolute top-0 left-0 right-0 bg-[#FF0000] border-b-2 border-black py-1 overflow-hidden z-40">
+      {/* TOP MARQUEE */}
+      <div className="absolute top-0 left-0 right-0 bg-[#00008B] border-b-2 border-[#FFD700] py-0.5 overflow-hidden z-40">
         <div className="animate-marquee whitespace-nowrap flex">
           {[...Array(4)].map((_, i) => (
-            <span key={i} className="text-sm md:text-base font-display text-white font-bold px-2 drop-shadow-[1px_1px_0px_#000]">
+            <span key={i} className="text-xs md:text-sm font-display text-[#FFD700] font-bold px-2">
               {topMarqueeText}
             </span>
           ))}
         </div>
       </div>
 
-      {/* Scattered Assets - THE EVIDENCE PILE */}
-      {scatteredAssets.map((asset, index) => (
-        <motion.div
-          key={index}
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: index * 0.08, duration: 0.3 }}
-          className={`absolute ${asset.position} ${asset.rotation} z-10`}
-        >
-          <div className="
-            w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32
-            border-4 border-dashed border-[#FF0000]
-            shadow-[3px_3px_0px_#0000FF,-3px_-3px_0px_#FFFF00]
-            bg-black p-1
-            hover:scale-110 hover:z-50
-            transition-transform cursor-pointer
-            group
-          ">
-            {asset.type === "video" ? (
-              <video
-                src={asset.src}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover group-hover:invert group-active:invert"
-              />
-            ) : (
-              <div className="relative w-full h-full">
-                <Image
-                  src={asset.src}
-                  alt="evidence"
-                  fill
-                  className="object-cover group-hover:invert group-active:invert"
-                />
-              </div>
-            )}
-          </div>
-        </motion.div>
-      ))}
-
-      {/* MAIN CONTENT - CENTER STAGE */}
-      <div className="flex-1 flex flex-col items-center justify-center relative z-20 pointer-events-none px-4">
-
-        {/* Header - THE LITTLE TRENCHER */}
-        <motion.div
-          animate={{
-            x: [0, -2, 2, -1, 0],
-            y: [0, 1, -1, 1, 0],
-          }}
-          transition={{
-            duration: 0.3,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="text-center mb-2"
-        >
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black font-display text-outline leading-none">
-            <span className="text-[#FF0000]">THE LITTLE</span>{" "}
-            <span className="text-[#FFFF00]">TRENCHER</span>{" "}
-            <span className="text-[#0000FF]">THAT COULDN&apos;T</span>
-          </h1>
-        </motion.div>
-
-        {/* Sub-header - just farm it */}
-        <motion.p
-          initial={{ rotate: 0 }}
-          animate={{ rotate: [-2, 2, -2] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-display text-[#00FF00] mb-3 md:mb-4"
-          style={{ textShadow: '2px 2px 0 #000, -2px -2px 0 #FF0000' }}
-        >
-          JUST FARM IT 😂✌️
-        </motion.p>
-
-        {/* CONTRACT ADDRESS - THE CENTERPIECE (CARD on Desktop) */}
-        <motion.button
-          onClick={copyToClipboard}
-          whileTap={{ scale: 0.95 }}
-          className={`
-            pointer-events-auto
-            px-4 py-3 md:px-6 md:py-4
-            ${copied ? 'bg-[#00FF00]' : 'bg-[#0000FF]'}
-            border-4 border-[#FFFF00]
-            shadow-[6px_6px_0px_#FF0000]
-            transition-all duration-150
-            cursor-pointer
-            w-full max-w-[95vw] md:max-w-3xl md:mx-auto
-          `}
-        >
-          <p className={`
-            text-lg sm:text-xl md:text-2xl lg:text-3xl
-            font-mono font-bold
-            break-all leading-tight
-            ${copied ? 'text-black' : 'text-white'}
-          `}
-          style={{ textShadow: copied ? 'none' : '2px 2px 0 #000' }}
+      {/* THE MURAL */}
+      {scatteredAssets.map((asset, index) => {
+        const isActive = activeAsset === index;
+        return (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{
+              opacity: hasEntered ? 1 : 0, // Only show after entering
+              scale: isActive ? 1.1 : 1,
+              zIndex: isActive ? 60 : 10
+            }}
+            transition={{ delay: index * 0.1, duration: 0.4 }}
+            whileHover={{ scale: 1.1, zIndex: 60 }}
+            onClick={() => handleAssetTap(index)}
+            className={`absolute ${asset.position} ${asset.rotation} cursor-pointer`}
           >
-            {copied ? "COPIED" : CONTRACT_ADDRESS}
+            <div className={`
+              ${asset.size}
+              border-4 border-dashed
+              ${isActive ? 'border-[#89CFF0]' : 'border-[#FFD700]'}
+              shadow-[4px_4px_0px_#00008B,-4px_-4px_0px_#89CFF0]
+              bg-transparent p-1
+              hover:border-[#89CFF0]
+              ${isActive ? 'animate-violent-shake' : ''}
+              hover:animate-violent-shake
+              group
+            `}>
+              {asset.type === "video" ? (
+                <video
+                  src={asset.src}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className={`w-full h-full object-cover group-hover:invert group-hover:brightness-125 ${isActive ? 'invert brightness-125' : ''}`}
+                />
+              ) : (
+                <div className="relative w-full h-full">
+                  <Image
+                    src={asset.src}
+                    alt="evidence"
+                    fill
+                    className={`object-cover group-hover:invert group-hover:brightness-125 ${isActive ? 'invert brightness-125' : ''}`}
+                  />
+                </div>
+              )}
+            </div>
+          </motion.div>
+        );
+      })}
+
+      {/* CENTER OVERLAY */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: hasEntered ? 1 : 0 }}
+        transition={{ delay: 0.5 }}
+        className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none"
+      >
+        <div className="
+          bg-black/40
+          backdrop-blur-none
+          border-2 border-[#FFD700]
+          shadow-[4px_4px_0px_#00008B]
+          px-4 py-3 md:px-6 md:py-4
+          max-w-sm md:max-w-md
+          text-center
+          pointer-events-auto
+        ">
+          <h1
+            className="text-lg sm:text-xl md:text-2xl font-black font-glitch leading-tight mb-1 animate-rgb-glitch"
+            style={{ WebkitTextStroke: '2px white', paintOrder: 'stroke fill' }}
+          >
+            <span className="md:hidden">
+              <span className="text-[#FFD700]">THE LITTLE TRENCHER</span>
+              <br />
+              <span className="text-[#00008B]">THAT COULDN&apos;T</span>
+            </span>
+            <span className="hidden md:inline">
+              <span className="text-[#FFD700]">THE LITTLE</span>
+              <br />
+              <span className="text-[#00008B]">TRENCHER THAT COULDN&apos;T</span>
+            </span>
+          </h1>
+
+          <p
+            className="text-sm md:text-base font-display text-[#FFD700] mb-2 animate-seesaw inline-block"
+            style={{ WebkitTextStroke: '1px white', paintOrder: 'stroke fill' }}
+          >
+            just farm it 😂✌️
           </p>
-        </motion.button>
 
-        {/* X Link */}
-        <a
-          href={X_LINK}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="
-            pointer-events-auto
-            inline-flex items-center gap-2
-            bg-[#FF0000] text-black
-            px-4 py-2 mt-3
-            border-2 border-black
-            shadow-[3px_3px_0px_#0000FF]
-            hover:bg-[#FFFF00]
-            transition-colors
-            font-bold text-sm md:text-base font-display
-          "
-        >
-          <Twitter className="w-4 h-4" />
-          @ENGINEONSOL
-        </a>
-      </div>
+          <button
+            onClick={copyToClipboard}
+            className={`
+              w-full px-2 py-1.5 mb-2
+              ${copied ? 'bg-[#89CFF0]' : 'bg-[#00008B]'}
+              border-2 border-dashed border-[#FFD700]
+              transition-all duration-150
+              cursor-pointer
+            `}
+          >
+            <p className={`
+              text-xs md:text-sm font-mono font-bold break-all
+              ${copied ? 'text-black' : 'text-white'}
+            `}>
+              {copied ? "COPIED!" : CONTRACT_ADDRESS}
+            </p>
+          </button>
 
-      {/* Corner decorations */}
-      <div className="absolute top-8 left-2 text-[#00FF00] text-[8px] md:text-[10px] font-mono opacity-50 z-30">
-        <p>[LIVE]</p>
-      </div>
-      <div className="absolute top-8 right-2 text-[#FF0000] text-[8px] md:text-[10px] font-mono opacity-50 z-30 animate-blink">
-        REC
-      </div>
-      <div className="absolute bottom-8 left-2 text-[#FFFF00] text-[8px] md:text-[10px] font-mono opacity-40 z-30">
-        <p>$ENGINE</p>
-      </div>
-      <div className="absolute bottom-8 right-2 text-[#0000FF] text-[8px] md:text-[10px] font-mono opacity-40 z-30">
-        <p>ENGINE JOHNSON</p>
-      </div>
+          <div className="flex flex-wrap items-center justify-center gap-1.5">
+            <a href={LINKS.pump} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 bg-[#00008B] text-[#FFD700] px-2 py-1 border-2 border-[#FFD700] hover:bg-[#FFD700] hover:text-black transition-colors font-bold text-[10px] md:text-xs font-display">
+              <Pill className="w-3 h-3" />
+              PUMP
+            </a>
+            <a href={LINKS.depot} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 bg-[#FFD700] text-[#00008B] px-2 py-1 border-2 border-[#00008B] hover:bg-[#89CFF0] hover:text-black transition-colors font-bold text-[10px] md:text-xs font-display">
+              <Warehouse className="w-3 h-3" />
+              DEPOT
+            </a>
+            <a href={LINKS.x} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 bg-[#89CFF0] text-black px-2 py-1 border-2 border-[#00008B] hover:bg-[#FFD700] transition-colors font-bold text-[10px] md:text-xs font-display">
+              <Twitter className="w-3 h-3" />
+              X
+            </a>
+          </div>
+        </div>
+      </motion.div>
 
-      {/* BOTTOM MARQUEE - "The Trenches" (scrolls RIGHT) */}
-      <div className="absolute bottom-0 left-0 right-0 bg-[#0000FF] border-t-2 border-[#FFFF00] py-1 overflow-hidden z-40">
+      {/* Corner tags */}
+      <div className="absolute top-7 left-2 text-[#89CFF0] text-[8px] font-mono opacity-80 z-30">[LIVE]</div>
+      <div className="absolute top-7 right-2 text-[#FFD700] text-[8px] font-mono opacity-80 z-30 animate-blink">REC</div>
+
+      {/* BOTTOM MARQUEE */}
+      <div className="absolute bottom-0 left-0 right-0 bg-[#FFD700] border-t-2 border-[#00008B] py-0.5 overflow-hidden z-40">
         <div className="animate-marquee-reverse whitespace-nowrap flex">
           {[...Array(4)].map((_, i) => (
-            <span key={i} className="text-sm md:text-base font-display text-[#00FF00] font-bold px-2 drop-shadow-[1px_1px_0px_#000]">
+            <span key={i} className="text-xs md:text-sm font-display text-[#00008B] font-bold px-2">
               {bottomMarqueeText}
             </span>
           ))}

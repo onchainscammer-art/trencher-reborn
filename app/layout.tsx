@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { Nosifer } from "next/font/google";
+import { Nosifer, Press_Start_2P } from "next/font/google";
 import "./globals.css";
 
 const nosifer = Nosifer({
   weight: "400",
   subsets: ["latin"],
   variable: "--font-display",
+});
+
+const pressStart = Press_Start_2P({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-glitch",
 });
 
 export const metadata: Metadata = {
@@ -23,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${nosifer.variable} noise-bg scanlines`}>
+      <body className={`${nosifer.variable} ${pressStart.variable} noise-bg scanlines`}>
         {children}
       </body>
     </html>
