@@ -34,11 +34,15 @@ const LAYERS = {
   COSTUMES: makeAssets("COSTUMES", [
     "Engabba", "EngineZone", "GakeSuit", "TheLittleTrencher", "YNEngine",
   ]),
+  ACCESSORY: makeAssets("ACCESSORY", [
+    "Diddy", "DiddyAgain", "Engussy", "Fuck", "FuckAgain",
+    "Matcha", "MiniMe", "Motion", "Pitchfork", "Purp",
+  ]),
 } as const;
 
 type Category = keyof typeof LAYERS;
 
-const CATEGORIES: Category[] = ["BG", "BODIES", "CLOTHES", "HATS", "GLASSES", "COSTUMES"];
+const CATEGORIES: Category[] = ["BG", "BODIES", "CLOTHES", "HATS", "GLASSES", "ACCESSORY", "COSTUMES"];
 
 type Selected = {
   bg: string | null;
@@ -46,6 +50,7 @@ type Selected = {
   clothes: string | null;
   hat: string | null;
   glasses: string | null;
+  accessory: string | null;
   costume: string | null;
 };
 
@@ -55,6 +60,7 @@ const CATEGORY_TO_KEY: Record<Category, keyof Selected> = {
   CLOTHES: "clothes",
   HATS: "hat",
   GLASSES: "glasses",
+  ACCESSORY: "accessory",
   COSTUMES: "costume",
 };
 
@@ -70,6 +76,7 @@ export default function PfpGenerator() {
     clothes: null,
     hat: null,
     glasses: null,
+    accessory: null,
     costume: null,
   });
 
@@ -111,6 +118,8 @@ export default function PfpGenerator() {
 
     const useCostume = Math.random() < 0.25; // 25% chance of costume
 
+    const useAccessory = Math.random() < 0.3; // 30% chance of accessory
+
     if (useCostume) {
       setSelected({
         bg: pick(LAYERS.BG),
@@ -118,6 +127,7 @@ export default function PfpGenerator() {
         clothes: null,
         hat: null,
         glasses: pick(LAYERS.GLASSES),
+        accessory: useAccessory ? pick(LAYERS.ACCESSORY) : null,
         costume: pick(LAYERS.COSTUMES),
       });
     } else {
@@ -127,6 +137,7 @@ export default function PfpGenerator() {
         clothes: pick(LAYERS.CLOTHES),
         hat: pick(LAYERS.HATS),
         glasses: pick(LAYERS.GLASSES),
+        accessory: useAccessory ? pick(LAYERS.ACCESSORY) : null,
         costume: null,
       });
     }
@@ -146,6 +157,7 @@ export default function PfpGenerator() {
         clothes: pick(LAYERS.CLOTHES),
         hat: pick(LAYERS.HATS),
         glasses: pick(LAYERS.GLASSES),
+        accessory: null,
         costume: null,
       });
     }
@@ -174,6 +186,7 @@ export default function PfpGenerator() {
     }
 
     if (selected.glasses) layers.push(selected.glasses);
+    if (selected.accessory) layers.push(selected.accessory);
 
     // Draw each layer sequentially
     for (const src of layers) {
@@ -213,6 +226,7 @@ export default function PfpGenerator() {
       clothes: null,
       hat: null,
       glasses: null,
+      accessory: null,
       costume: null,
     });
   };
