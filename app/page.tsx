@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Twitter, Pill, Warehouse, Play } from "lucide-react";
+import { Twitter, Pill, Warehouse, Play, Paintbrush } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import MemeBackground from "./components/MemeBackground";
 
 // COLOR PALETTE - STRICT 5 COLORS ONLY
@@ -228,6 +229,27 @@ export default function Home() {
         transition={{ delay: 0.5 }}
         className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none"
       >
+        {/* NFT Generator Button — absolute so card stays centered */}
+        <Link href="/pfp" className="absolute top-[22%] md:top-auto md:bottom-[74%] left-1/2 -translate-x-1/2 w-[26%] md:w-[225px] block group overflow-hidden z-[60] pointer-events-auto">
+          <div className="relative w-full h-7 md:h-12 bg-[#00008B] border-2 border-[#FFD700] hover:border-[#89CFF0] shadow-[4px_4px_0px_#000000] hover:shadow-[2px_2px_0px_#000000] hover:translate-y-[2px] transition-all duration-150 flex items-center justify-center text-center overflow-hidden cursor-pointer">
+            {/* Industrial Marquee Background */}
+            <div className="absolute inset-0 opacity-20 flex items-center pointer-events-none select-none">
+              <div className="animate-marquee whitespace-nowrap text-[6px] md:text-[10px] font-mono text-[#FFD700]">
+                IDENTITY REQUIRED /// NO FACE NO CASE /// MINT PFP /// IDENTITY REQUIRED /// NO FACE NO CASE /// MINT PFP ///
+              </div>
+            </div>
+            {/* Foreground */}
+            <div className="relative z-10 flex items-center gap-1 md:gap-3">
+              <Paintbrush className="w-2.5 h-2.5 md:w-5 md:h-5 text-[#FFD700] group-hover:rotate-90 transition-transform duration-300" />
+              <span className="font-display font-black tracking-wider md:tracking-widest text-[7px] md:text-sm text-white group-hover:text-[#FFD700] group-hover:animate-subtle-shake">
+                NFT GENERATOR
+              </span>
+            </div>
+            {/* Scanline Sweep */}
+            <div className="absolute inset-0 bg-[#FFD700] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out opacity-20 pointer-events-none" />
+          </div>
+        </Link>
+
         <div className="
           bg-black/40
           backdrop-blur-none
