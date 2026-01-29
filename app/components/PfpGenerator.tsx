@@ -97,13 +97,13 @@ export default function PfpGenerator() {
         return { ...prev, [key]: null };
       }
 
-      // Costume override: clear body, clothes, hat
+      // Costume override: clear body, clothes, hat, accessory
       if (category === "COSTUMES") {
-        return { ...prev, costume: src, body: null, clothes: null, hat: null };
+        return { ...prev, costume: src, body: null, clothes: null, hat: null, accessory: null };
       }
 
-      // If selecting body/clothes/hat while in costume mode, clear costume
-      if (isCostumeMode && (key === "body" || key === "clothes" || key === "hat")) {
+      // If selecting body/clothes/hat/accessory while in costume mode, clear costume
+      if (isCostumeMode && (key === "body" || key === "clothes" || key === "hat" || key === "accessory")) {
         return { ...prev, [key]: src, costume: null };
       }
 
@@ -235,7 +235,7 @@ export default function PfpGenerator() {
   const currentItems = LAYERS[activeTab];
   const currentKey = CATEGORY_TO_KEY[activeTab];
   const isDisabled =
-    isCostumeMode && (activeTab === "BODIES" || activeTab === "CLOTHES" || activeTab === "HATS");
+    isCostumeMode && (activeTab === "BODIES" || activeTab === "CLOTHES" || activeTab === "HATS" || activeTab === "ACCESSORY");
 
   return (
     <div
@@ -324,7 +324,7 @@ export default function PfpGenerator() {
           {/* Costume Mode Indicator */}
           {isCostumeMode && (
             <div className="text-[10px] font-mono text-[#89CFF0] text-center animate-blink">
-              COSTUME MODE ACTIVE — BODY/CLOTHES/HAT LOCKED
+              COSTUME MODE ACTIVE — BODY/CLOTHES/HAT/ACCESSORY LOCKED
             </div>
           )}
         </div>
@@ -336,7 +336,7 @@ export default function PfpGenerator() {
             {CATEGORIES.map((cat) => {
               const isActive = activeTab === cat;
               const isLocked =
-                isCostumeMode && (cat === "BODIES" || cat === "CLOTHES" || cat === "HATS");
+                isCostumeMode && (cat === "BODIES" || cat === "CLOTHES" || cat === "HATS" || cat === "ACCESSORY");
 
               return (
                 <button
